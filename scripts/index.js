@@ -38,6 +38,7 @@ function addPlayer(playerName, pointsScored, pointsAllowed) {
     // Append the delete button to the action cell
     deleteOrAddCell.appendChild(deleteButton);
     deleteOrAddCell.appendChild(addGameButton);
+    updateStandings()
 }
 
 function addGame(playerRowIndex) {
@@ -45,9 +46,10 @@ function addGame(playerRowIndex) {
 
     // Create a temporary row beneath the player row to input game scores
     const row = standingsTable.insertRow(playerRowIndex + 1);
-    const pointsScoredCell = row.insertCell(0);
-    const pointsAllowedCell = row.insertCell(1);
-    const saveGameCell = row.insertCell(2);
+    const blankCell = row.insertCell(0);
+    const pointsScoredCell = row.insertCell(1);
+    const pointsAllowedCell = row.insertCell(2);
+    const saveGameCell = row.insertCell(3);
 
     pointsScoredCell.innerHTML = `<input type="number" id="game-scored" placeholder="Points Scored">`;
     pointsAllowedCell.innerHTML = `<input type="number" id="game-allowed" placeholder="Points Allowed">`;
@@ -82,23 +84,23 @@ function addGame(playerRowIndex) {
     });
 
     saveGameCell.appendChild(saveGameButton);
+
+    updateStandings()
 }
 
-document.addEventListener("DOMContentLoaded", function() {
-    document.querySelector(".add-player-button").addEventListener("click", function() {
-        const playerName = document.getElementById('player-name').value;
-        const pointsScored = parseInt(document.getElementById('points-scored').value, 10);
-        const pointsAllowed = parseInt(document.getElementById('points-allowed').value, 10);
+function updateStandings() {
+    const standingsTable = document.getElementById('standings-table');
+    const rowsArray = Array.from(standingsTable.rows).slice(1);
 
-        addPlayer(playerName, pointsScored, pointsAllowed);
-
-        // Clear the input fields after adding a player
-        document.getElementById('player-name').value = '';
-        document.getElementById('points-scored').value = '';
-        document.getElementById('points-allowed').value = '';
+    // Sort rows by point differential (column index 3) in descending order
+    rowsArray.sort((rowA, rowB) => {
+        const diffA = parseInt(rowA.cells[3].innerHTML, 10);
+        const diffB = parseInt(rowB.cells[3].innerHTML, 10);
+        return diffB - diffA; // Descending order
     });
-});
 
+    rowsArray.forEach(row => standingsTable.appendChild(row));
+}
 
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelector(".add-player-button").addEventListener("click", function() {
