@@ -4,6 +4,9 @@ function addPlayer(playerName, pointsScored, pointsAllowed) {
         return;
     }
 
+    let wins;
+    let losses;
+
     const standingsTable = document.getElementById('standings-table');
     const row = standingsTable.insertRow(standingsTable.rows.length);
     const nameCell = row.insertCell(0);
@@ -11,11 +14,24 @@ function addPlayer(playerName, pointsScored, pointsAllowed) {
     const pointsAllowedCell = row.insertCell(2);
     const pointDifferentialCell = row.insertCell(3);
     const deleteOrAddCell = row.insertCell(4);
+    const winsCell = row.insertCell(5);
+    const lossesCell = row.insertCell(6);
 
     nameCell.innerHTML = playerName;
     pointsScoredCell.innerHTML = pointsScored;
     pointsAllowedCell.innerHTML = pointsAllowed;
     pointDifferentialCell.innerHTML = pointsScoredCell.innerHTML - pointsAllowedCell.innerHTML;
+
+    if (parseInt(pointsScored) > parseInt(pointsAllowed)) {
+        wins = 1
+        losses = 0
+    } else {
+        wins = 0
+        losses = 1
+    }
+
+    winsCell.innerHTML = wins;
+    lossesCell.innerHTML = losses;
 
     // Create the delete button
     const deleteButton = document.createElement("button");
@@ -71,6 +87,8 @@ function addGame(playerRowIndex) {
         const pointsScoredCell = playerRow.cells[1];
         const pointsAllowedCell = playerRow.cells[2];
         const pointDifferentialCell = playerRow.cells[3];
+        const winsCell = playerRow.cells[5];
+        const lossesCell = playerRow.cells[6];
 
         const currentPointsScored = parseInt(pointsScoredCell.innerHTML, 10);
         const currentPointsAllowed = parseInt(pointsAllowedCell.innerHTML, 10);
@@ -78,6 +96,12 @@ function addGame(playerRowIndex) {
         pointsScoredCell.innerHTML = currentPointsScored + pointsScored;
         pointsAllowedCell.innerHTML = currentPointsAllowed + pointsAllowed;
         pointDifferentialCell.innerHTML = (currentPointsScored + pointsScored) - (currentPointsAllowed + pointsAllowed);
+
+        if (parseInt(pointsScored) > parseInt(pointsAllowed)) {
+            winsCell.innerHTML++;
+        } else {
+            lossesCell.innerHTML++;
+        }
 
         // Remove the temporary row
         standingsTable.deleteRow(row.rowIndex);
@@ -107,7 +131,9 @@ document.addEventListener("DOMContentLoaded", function() {
         const playerName = document.getElementById('player-name').value
         const pointsScored = document.getElementById('points-scored').value
         const pointsAllowed = document.getElementById('points-allowed').value
+
         addPlayer(playerName, pointsScored, pointsAllowed);
+
         document.getElementById('player-name').value = ''
         document.getElementById('points-scored').value = ''
         document.getElementById('points-allowed').value = ''
