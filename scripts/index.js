@@ -105,11 +105,11 @@ function addGame(playerRowIndex) {
 
         // Remove the temporary row
         standingsTable.deleteRow(row.rowIndex);
+
+        updateStandings()
     });
 
     saveGameCell.appendChild(saveGameButton);
-
-    updateStandings()
 }
 
 function updateStandings() {
