@@ -33,13 +33,13 @@ function addPlayer(playerName, pointsScored, pointsAllowed) {
     winsCell.innerHTML = wins;
     lossesCell.innerHTML = losses;
 
-    // Create the delete button
-    const deleteButton = document.createElement("button");
-    deleteButton.innerHTML = "Delete";
-
-    // Create the edit button
     const addGameButton = document.createElement("button");
     addGameButton.innerHTML = "Add Game";
+    addGameButton.classList.add('add-game-button');
+
+    const deleteButton = document.createElement("button");
+    deleteButton.innerHTML = "Delete";
+    deleteButton.classList.add('delete-button');
 
     // Add event listener for the delete button
     deleteButton.addEventListener("click", function() {
@@ -51,9 +51,8 @@ function addPlayer(playerName, pointsScored, pointsAllowed) {
         addGame(row.rowIndex);
     })
 
-    // Append the delete button to the action cell
-    deleteOrAddCell.appendChild(deleteButton);
     deleteOrAddCell.appendChild(addGameButton);
+    deleteOrAddCell.appendChild(deleteButton);
     updateStandings()
 }
 

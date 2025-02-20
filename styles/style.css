@@ -2,12 +2,17 @@ body {
     font-family: Arial, Helvetica, sans-serif;
 }
 
+h1 {
+    text-align: center;
+}
+
 .standings-table {
     width: 100%;
     border-collapse: separate; /* Change from collapse */
     border-spacing: 0; /* Ensures borders touch */
     border-radius: 10px; /* Rounds the table */
     overflow: hidden; /* Ensures content respects rounding */
+    background-color: lightgray;
 }
 
 .standings-table th, .standings-table td {
@@ -33,6 +38,6 @@ body {
     border-bottom-right-radius: 10px;
 }
 
-h1 {
-    text-align: center;
+.add-game-button {
+    margin: 10px;
 }
