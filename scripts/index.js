@@ -1,3 +1,9 @@
+let players = []
+
+function generateSchedule(players, numRounds) {
+    // Generates a schedule where each player plays an equal number of matches.
+}
+
 function addPlayer(playerName, pointsScored, pointsAllowed) {
     if (!playerName) {
         alert("Please enter a player name.");
