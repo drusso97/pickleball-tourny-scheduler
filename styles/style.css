@@ -43,7 +43,7 @@ h1 {
 }
 
 /* Center the form */
-.form-container {
+.add-player-container {
     width: 300px;
     margin: 50px auto; /* Centers it horizontally */
     padding: 20px;
@@ -57,7 +57,7 @@ h1 {
 }
 
 /* Style the inputs */
-.form-container input {
+.add-player-container input {
     width: 90%;
     padding: 8px;
     border: 1px solid #ccc;
@@ -66,7 +66,7 @@ h1 {
 }
 
 /* Improve button styling */
-.add-player-button {
+.add-player-standings-button {
     background-color: #007bff;
     color: white;
     border: none;
@@ -77,6 +77,6 @@ h1 {
     transition: background 0.3s;
 }
 
-.add-player-button:hover {
+.add-player-standings-button:hover {
     background-color: #0056b3;
 }

@@ -22,19 +22,19 @@
             <th>Losses</th>
         </tr>
     </table>
-    <div class="form-container">
-        <label>Name:
-            <input type="text" id="player-name" placeholder="Player Name">
-        </label>
-        <br>
-        <label>Points Scored:
-            <input type="text" id="points-scored" placeholder="Points Scored">
-        </label>
-        <br>
-        <label>Points Allowed:
-            <input type="text" id="points-allowed" placeholder="Points Allowed">
-        </label>
-        <button class="add-player-button">Add Player</button>
+
+    <div class="create-schedule-container">
+        <h2>Setup Tournament</h2>
+        <label>Player Name:</label>
+        <input id="playerName" type="text" placeholder="Enter player name">
+        <button class="add-player-to-schedule-button">Add Player</button>
+
+        <ul class="player-list"></ul>
+
+        <label>Number of Rounds:</label>
+        <input id="numRounds" type="number" placeholder="Enter rounds">
+
+        <button class="generate-schedule-button">Generate Schedule</button>
     </div>
 </body>
 </html>
