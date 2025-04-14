@@ -41,21 +41,30 @@ function updatePlayerList() {
     });
 }
 
+function shuffleArray(array) {
+    for (let i = array.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [array[i], array[j]] = [array[j], array[i]];
+    }
+    return array;
+}
+
 function generateSchedule() {
-    // let schedule = [];
+    schedule = [];
     let usedPairs = new Set();
 
     for (let round = 1; round <= numRounds; round++) {
-        let availablePlayers = [...players];
+        let availablePlayers = shuffleArray([...players]);
         let matches = [];
 
         while (availablePlayers.length >= 4) {
             let [p1, p2, p3, p4] = availablePlayers.splice(0, 4);
+            let matchKey = `${p1}-${p2} vs ${p3}-${p4}`;
+
+            if (usedPairs.has(matchKey)) continue;
+
             let team1 = [p1, p2];
             let team2 = [p3, p4];
-
-            let matchKey = `${p1}-${p2} vs ${p3}-${p4}`;
-            if (usedPairs.has(matchKey)) continue; // Avoid exact rematches
 
             matches.push({ team1, team2, score: null });
             usedPairs.add(matchKey);
