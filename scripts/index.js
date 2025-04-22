@@ -154,15 +154,16 @@ function updateStandingsTable() {
 
     Object.entries(standings)
         .sort((a, b) => {
-            const [pa, pb] = [a[1], b[1]];
+            const pa = a[1];
+            const pb = b[1];
             const diffA = pa.pointsScored - pa.pointsAllowed;
             const diffB = pb.pointsScored - pb.pointsAllowed;
 
-            // Sort by wins, then point differential, then points scored
+            // Sort by wins first, then point differential, then points scored
             return (
-                b.wins - pa.wins ||        // Primary: Wins (desc)
-                diffB - diffA ||           // Secondary: Point differential (desc)
-                b.pointsScored - pa.pointsScored // Tertiary: Points scored (desc)
+                pb.wins - pa.wins ||           // Wins DESC
+                diffB - diffA ||               // Point differential DESC
+                pb.pointsScored - pa.pointsScored // Points scored DESC
             );
         })
         .forEach(([player, stats]) => {
