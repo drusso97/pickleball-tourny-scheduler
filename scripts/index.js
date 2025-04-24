@@ -76,21 +76,22 @@ function generateSchedule() {
     displaySchedule(schedule);
 }
 
-function displaySchedule(schedule) {
-    const scheduleContainer = document.createElement("div");
+function displaySchedule(schedule, isPlayoffs = false) {
+    const scheduleContainer = document.querySelector(".schedule-container") || document.createElement("div");
     scheduleContainer.classList.add("schedule-container");
+    scheduleContainer.innerHTML = ""; // Clear previous schedule
 
-    schedule.forEach((round) => {
+    schedule.forEach((round, roundIndex) => {
         let roundDiv = document.createElement("div");
-        roundDiv.innerHTML = `<h3>Round ${round.round}</h3>`;
+        roundDiv.innerHTML = `<h3>${isPlayoffs ? 'Playoff' : 'Round'} ${round.round}</h3>`;
 
         round.matches.forEach((match, index) => {
             let matchDiv = document.createElement("div");
             matchDiv.innerHTML = `
                 <p>${match.team1.join(" & ")} vs ${match.team2.join(" & ")}</p>
-                <input type="text" placeholder="Team 1 Score" id="score1-${round.round}-${index}">
-                <input type="text" placeholder="Team 2 Score" id="score2-${round.round}-${index}">
-                <button onclick="submitScore(${round.round}, ${index})">Submit</button>
+                <input type="text" placeholder="Team 1 Score" id="score1-${roundIndex}-${index}">
+                <input type="text" placeholder="Team 2 Score" id="score2-${roundIndex}-${index}">
+                <button onclick="submitScore(${roundIndex}, ${index})">Submit</button>
             `;
             roundDiv.appendChild(matchDiv);
         });
@@ -99,7 +100,14 @@ function displaySchedule(schedule) {
     });
 
     document.body.appendChild(scheduleContainer);
+
+    // Ensure the playoffs button is moved to bottom
+    const playoffsButton = document.querySelector(".generate-playoffs-button");
+    if (playoffsButton) {
+        document.body.appendChild(playoffsButton);
+    }
 }
+
 
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelector(".generate-schedule-button").addEventListener("click", function () {
@@ -128,7 +136,7 @@ function submitScore(round, matchIndex) {
         return;
     }
 
-    const match = schedule[round - 1].matches[matchIndex];
+    const match = schedule[round].matches[matchIndex];
 
     match.team1.forEach(player => updateStandings(player, score1, score2));
     match.team2.forEach(player => updateStandings(player, score2, score1));
@@ -176,3 +184,90 @@ function updateStandingsTable() {
                          <td>${stats.pointsScored - stats.pointsAllowed}</td>`;
         });
 }
+
+function generatePlayoffSchedule() {
+    const sortedPlayers = Object.entries(standings)
+        .sort((a, b) => {
+            const diffA = a[1].pointsScored - a[1].pointsAllowed;
+            const diffB = b[1].pointsScored - b[1].pointsAllowed;
+            return (
+                b[1].wins - a[1].wins ||
+                diffB - diffA ||
+                b[1].pointsScored - a[1].pointsScored
+            );
+        })
+        .map(([player]) => player);
+
+    let topHalf = Math.ceil(sortedPlayers.length / 2);
+    let playoffCount = topHalf;
+
+    // Increase to nearest multiple of 4
+    while (playoffCount % 4 !== 0) playoffCount++;
+
+    const playoffPlayers = sortedPlayers.slice(0, playoffCount);
+    const playoffTeams = [];
+
+    for (let i = 0; i < playoffPlayers.length / 2; i += 2) {
+        playoffTeams.push([playoffPlayers[i], playoffPlayers[i + 1]]);
+        playoffTeams.push([playoffPlayers[playoffPlayers.length - 1 - i], playoffPlayers[playoffPlayers.length - 2 - i]]);
+    }
+
+    const playoffMatches = [];
+    for (let i = 0; i < playoffTeams.length; i += 2) {
+        playoffMatches.push({
+            team1: playoffTeams[i],
+            team2: playoffTeams[i + 1],
+            score: null
+        });
+    }
+
+    const playoffRound = { round: "Quarterfinals", matches: playoffMatches };
+    schedule = [playoffRound]; // Clear existing schedule to focus on playoffs
+
+    displaySchedule(schedule, true);
+}
+function submitPlayoffScore(matchIndex) {
+    const score1 = parseInt(document.getElementById(`score1-${matchIndex}`).value);
+    const score2 = parseInt(document.getElementById(`score2-${matchIndex}`).value);
+
+    if (isNaN(score1) || isNaN(score2)) {
+        alert("Enter valid scores!");
+        return;
+    }
+
+    // Update standings based on playoff results
+    const match = playoffSchedule[matchIndex];
+
+    if (score1 > score2) {
+        updateStandings(match.team1, score1, score2);  // Team 1 wins
+        updateStandings(match.team2, score2, score1);  // Team 2 loses
+    } else {
+        updateStandings(match.team2, score2, score1);  // Team 2 wins
+        updateStandings(match.team1, score1, score2);  // Team 1 loses
+    }
+
+    // Update playoff matchups for the next round
+    // Continue creating next round matchups as necessary.
+}
+
+
+document.querySelector(".generate-schedule-button").addEventListener("click", function () {
+    numRounds = parseInt(document.getElementById("numRounds").value);
+    if (players.length % 4 !== 0) {
+        alert("Number of players must be a multiple of 4 for balanced doubles.");
+        return;
+    }
+    if (numRounds < 1) {
+        alert("Please enter a valid number of rounds.");
+        return;
+    }
+
+    generateSchedule();
+
+    const playoffsButton = document.querySelector(".generate-playoffs-button");
+    if (playoffsButton) {
+        playoffsButton.style.display = "block";
+    }
+});
+
+
