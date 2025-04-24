@@ -264,10 +264,10 @@ document.querySelector(".generate-schedule-button").addEventListener("click", fu
 
     generateSchedule();
 
-    const playoffsButton = document.querySelector(".generate-playoffs-button");
-    if (playoffsButton) {
-        playoffsButton.style.display = "block";
-    }
+    // const playoffsButton = document.querySelector(".generate-playoffs-button");
+    // if (playoffsButton) {
+    //     playoffsButton.style.display = "block";
+    // }
 });
 
 
