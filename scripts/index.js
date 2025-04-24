@@ -251,23 +251,3 @@ function submitPlayoffScore(matchIndex) {
 }
 
 
-document.querySelector(".generate-schedule-button").addEventListener("click", function () {
-    numRounds = parseInt(document.getElementById("numRounds").value);
-    if (players.length % 4 !== 0) {
-        alert("Number of players must be a multiple of 4 for balanced doubles.");
-        return;
-    }
-    if (numRounds < 1) {
-        alert("Please enter a valid number of rounds.");
-        return;
-    }
-
-    generateSchedule();
-
-    // const playoffsButton = document.querySelector(".generate-playoffs-button");
-    // if (playoffsButton) {
-    //     playoffsButton.style.display = "block";
-    // }
-});
-
-
