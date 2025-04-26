@@ -128,8 +128,12 @@ document.addEventListener("DOMContentLoaded", function() {
 const standings = {};
 
 function submitScore(round, matchIndex) {
-    const score1 = parseInt(document.getElementById(`score1-${round}-${matchIndex}`).value);
-    const score2 = parseInt(document.getElementById(`score2-${round}-${matchIndex}`).value);
+    const score1Input = document.getElementById(`score1-${round}-${matchIndex}`);
+    const score2Input = document.getElementById(`score2-${round}-${matchIndex}`);
+    const submitButton = score1Input.nextElementSibling.nextElementSibling; // Assuming button is after two inputs
+
+    const score1 = parseInt(score1Input.value);
+    const score2 = parseInt(score2Input.value);
 
     if (isNaN(score1) || isNaN(score2)) {
         alert("Enter valid scores!");
@@ -142,6 +146,11 @@ function submitScore(round, matchIndex) {
     match.team2.forEach(player => updateStandings(player, score2, score1));
 
     updateStandingsTable();
+
+    // Disable inputs and button
+    score1Input.disabled = true;
+    score2Input.disabled = true;
+    submitButton.disabled = true;
 }
 
 function updateStandings(player, pointsScored, pointsAllowed) {
