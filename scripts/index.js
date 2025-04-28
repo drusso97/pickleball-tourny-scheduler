@@ -1,6 +1,10 @@
-let players = []; // Store players
+let players = [];
 let numRounds = 0;
 let schedule = [];
+let isPlayoffs = false;
+let playoffRounds = [];
+let currentPlayoffRoundIndex = 0;
+
 
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelector(".add-player-to-schedule-button").addEventListener("click", function () {
@@ -195,6 +199,10 @@ function updateStandingsTable() {
 }
 
 function generatePlayoffSchedule() {
+    isPlayoffs = true;
+    playoffRounds = [];
+    currentPlayoffRoundIndex = 0;
+
     const sortedPlayers = Object.entries(standings)
         .sort((a, b) => {
             const diffA = a[1].pointsScored - a[1].pointsAllowed;
@@ -210,7 +218,6 @@ function generatePlayoffSchedule() {
     let topHalf = Math.ceil(sortedPlayers.length / 2);
     let playoffCount = topHalf;
 
-    // Increase to nearest multiple of 4
     while (playoffCount % 4 !== 0) playoffCount++;
 
     const playoffPlayers = sortedPlayers.slice(0, playoffCount);
@@ -230,10 +237,98 @@ function generatePlayoffSchedule() {
         });
     }
 
-    const playoffRound = { round: "Quarterfinals", matches: playoffMatches };
-    schedule = [playoffRound]; // Clear existing schedule to focus on playoffs
-
-    displaySchedule(schedule, true);
+    playoffRounds.push(playoffMatches);
+    displayPlayoffRound();
 }
 
+function displayPlayoffRound() {
+    const scheduleContainer = document.querySelector(".schedule-container") || document.createElement("div");
+    scheduleContainer.classList.add("schedule-container");
+    scheduleContainer.innerHTML = "";
 
+    const roundName = getPlayoffRoundName(playoffRounds[currentPlayoffRoundIndex].length);
+
+    const roundDiv = document.createElement("div");
+    roundDiv.innerHTML = `<h3>${roundName}</h3>`;
+
+    playoffRounds[currentPlayoffRoundIndex].forEach((match, index) => {
+        const matchDiv = document.createElement("div");
+        matchDiv.innerHTML = `
+            <p>${match.team1.join(" & ")} vs ${match.team2.join(" & ")}</p>
+            <input type="text" placeholder="Team 1 Score" id="playoff-score1-${currentPlayoffRoundIndex}-${index}">
+            <input type="text" placeholder="Team 2 Score" id="playoff-score2-${currentPlayoffRoundIndex}-${index}">
+            <button onclick="submitPlayoffScore(${currentPlayoffRoundIndex}, ${index})">Submit</button>
+        `;
+        roundDiv.appendChild(matchDiv);
+    });
+
+    scheduleContainer.appendChild(roundDiv);
+    document.body.appendChild(scheduleContainer);
+}
+
+function getPlayoffRoundName(numMatches) {
+    if (numMatches === 8) return "Round of 16";
+    if (numMatches === 4) return "Quarterfinals";
+    if (numMatches === 2) return "Semifinals";
+    if (numMatches === 1) return "Championship";
+    return "Playoff Round";
+}
+
+function submitPlayoffScore(roundIndex, matchIndex) {
+    const score1Input = document.getElementById(`playoff-score1-${roundIndex}-${matchIndex}`);
+    const score2Input = document.getElementById(`playoff-score2-${roundIndex}-${matchIndex}`);
+    const submitButton = score1Input.nextElementSibling.nextElementSibling;
+
+    const score1 = parseInt(score1Input.value);
+    const score2 = parseInt(score2Input.value);
+
+    if (isNaN(score1) || isNaN(score2)) {
+        alert("Enter valid scores!");
+        return;
+    }
+
+    const match = playoffRounds[roundIndex][matchIndex];
+    match.score = [score1, score2];
+
+    // Disable inputs
+    score1Input.disabled = true;
+    score2Input.disabled = true;
+    submitButton.disabled = true;
+
+    // Check if all matches are completed for this round
+    const allCompleted = playoffRounds[roundIndex].every(m => m.score !== null);
+    if (allCompleted) {
+        generateNextPlayoffRound();
+    }
+}
+
+function generateNextPlayoffRound() {
+    const winners = [];
+
+    playoffRounds[currentPlayoffRoundIndex].forEach(match => {
+        const [score1, score2] = match.score;
+        if (score1 > score2) {
+            winners.push(match.team1);
+        } else {
+            winners.push(match.team2);
+        }
+    });
+
+    if (winners.length <= 1) {
+        alert(`🏆 Tournament Winner: ${winners[0].join(" & ")}!`);
+        return;
+    }
+
+    const nextRoundMatches = [];
+    for (let i = 0; i < winners.length; i += 2) {
+        nextRoundMatches.push({
+            team1: winners[i],
+            team2: winners[i + 1],
+            score: null
+        });
+    }
+
+    playoffRounds.push(nextRoundMatches);
+    currentPlayoffRoundIndex++;
+    displayPlayoffRound();
+}
