@@ -235,28 +235,5 @@ function generatePlayoffSchedule() {
 
     displaySchedule(schedule, true);
 }
-function submitPlayoffScore(matchIndex) {
-    const score1 = parseInt(document.getElementById(`score1-${matchIndex}`).value);
-    const score2 = parseInt(document.getElementById(`score2-${matchIndex}`).value);
-
-    if (isNaN(score1) || isNaN(score2)) {
-        alert("Enter valid scores!");
-        return;
-    }
-
-    // Update standings based on playoff results
-    const match = playoffSchedule[matchIndex];
-
-    if (score1 > score2) {
-        updateStandings(match.team1, score1, score2);  // Team 1 wins
-        updateStandings(match.team2, score2, score1);  // Team 2 loses
-    } else {
-        updateStandings(match.team2, score2, score1);  // Team 2 wins
-        updateStandings(match.team1, score1, score2);  // Team 1 loses
-    }
-
-    // Update playoff matchups for the next round
-    // Continue creating next round matchups as necessary.
-}
 
 
