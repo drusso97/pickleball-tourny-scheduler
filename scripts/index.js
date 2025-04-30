@@ -5,6 +5,34 @@ let isPlayoffs = false;
 let playoffRounds = [];
 let currentPlayoffRoundIndex = 0;
 
+function saveTournamentState() {
+    const state = {
+        players,
+        schedule,
+        standings,
+        numRounds
+    };
+    localStorage.setItem("tournamentState", JSON.stringify(state));
+}
+
+function loadTournamentState() {
+    const savedState = localStorage.getItem("tournamentState");
+    if (savedState) {
+        const { players: savedPlayers, schedule: savedSchedule, standings: savedStandings, numRounds: savedNumRounds } = JSON.parse(savedState);
+        players = savedPlayers || [];
+        schedule = savedSchedule || [];
+        Object.assign(standings, savedStandings || {});
+        numRounds = savedNumRounds || 0;
+
+        updatePlayerList();
+        displaySchedule(schedule);
+        updateStandingsTable();
+    }
+}
+
+function clearTournamentState() {
+    localStorage.removeItem("tournamentState");
+}
 
 document.addEventListener("DOMContentLoaded", function() {
     document.querySelector(".add-player-to-schedule-button").addEventListener("click", function () {
@@ -78,6 +106,7 @@ function generateSchedule() {
     }
 
     displaySchedule(schedule);
+    saveTournamentState();
 }
 
 function displaySchedule(schedule, isPlayoffs = false) {
@@ -155,6 +184,8 @@ function submitScore(round, matchIndex) {
     score1Input.disabled = true;
     score2Input.disabled = true;
     submitButton.disabled = true;
+    saveTournamentState();
+
 }
 
 function updateStandings(player, pointsScored, pointsAllowed) {
@@ -167,6 +198,7 @@ function updateStandings(player, pointsScored, pointsAllowed) {
 
     if (pointsScored > pointsAllowed) standings[player].wins++;
     else standings[player].losses++;
+    saveTournamentState();
 }
 
 function updateStandingsTable() {
@@ -196,6 +228,7 @@ function updateStandingsTable() {
                          <td>${stats.pointsAllowed}</td>
                          <td>${stats.pointsScored - stats.pointsAllowed}</td>`;
         });
+    saveTournamentState();
 }
 
 function generatePlayoffSchedule() {
@@ -239,6 +272,7 @@ function generatePlayoffSchedule() {
 
     playoffRounds.push(playoffMatches);
     displayPlayoffRound();
+    saveTournamentState();
 }
 
 function displayPlayoffRound() {
@@ -300,6 +334,7 @@ function submitPlayoffScore(roundIndex, matchIndex) {
     if (allCompleted) {
         generateNextPlayoffRound();
     }
+    saveTournamentState();
 }
 
 function generateNextPlayoffRound() {
@@ -331,6 +366,7 @@ function generateNextPlayoffRound() {
     playoffRounds.push(nextRoundMatches);
     currentPlayoffRoundIndex++;
     displayPlayoffRound();
+    saveTournamentState();
 }
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -350,6 +386,13 @@ document.addEventListener("DOMContentLoaded", function () {
         document.getElementById("standings-table").innerHTML = "<tr><th>Player</th><th>Wins</th><th>Losses</th><th>Points Scored</th><th>Points Allowed</th><th>Point Differential</th></tr>";
         document.getElementById("playerName").value = "";
         document.getElementById("numRounds").value = "";
+        clearTournamentState();
 
     });
 });
+
+
+// Leaving this feature out for now due to bugs
+// document.addEventListener("DOMContentLoaded", function() {
+//     loadTournamentState();
+// });
