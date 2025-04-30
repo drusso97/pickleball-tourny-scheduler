@@ -332,3 +332,24 @@ function generateNextPlayoffRound() {
     currentPlayoffRoundIndex++;
     displayPlayoffRound();
 }
+
+document.addEventListener("DOMContentLoaded", function () {
+    document.querySelector(".reset-button").addEventListener("click", function () {
+        if (!confirm("Are you sure you want to reset the tournament? This will clear all data.")) {
+            return;
+        }
+
+        // Clear global data
+        players = [];
+        schedule = [];
+        numRounds = 0;
+
+        // Clear UI
+        document.querySelector(".player-list").innerHTML = "";
+        document.querySelector(".schedule-container")?.remove();
+        document.getElementById("standings-table").innerHTML = "<tr><th>Player</th><th>Wins</th><th>Losses</th><th>Points Scored</th><th>Points Allowed</th><th>Point Differential</th></tr>";
+        document.getElementById("playerName").value = "";
+        document.getElementById("numRounds").value = "";
+
+    });
+});
